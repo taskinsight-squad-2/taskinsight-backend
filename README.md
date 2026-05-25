@@ -3,6 +3,6 @@ backend for the task insight app
 
 ATENÇÃO DEV
 
-Não desenvolver na branch main 
-Sempre crie uma branch da feature que estiver implementando. 
+1. Não desenvolver na branch main 
+2. Sempre crie uma branch da feature que estiver implementando. 
 
