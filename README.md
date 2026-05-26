@@ -60,6 +60,7 @@ Define o schema do MongoDB com Mongoose. É a representação dos dados no banco
 
 - `user.model.js` — campos: `name`, `email`, `password`, `createdAt`
 - `task.model.js` — campos: `title`, `description`, `status`, `userId`, `createdAt`
+(APENAS EXEMPLOS, CONFIRMAR PROPRIEDADES COM TIME)
 
 ```js
 // exemplo: src/models/task.model.js
