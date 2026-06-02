@@ -1,9 +1,10 @@
-import Router from "express";
+import { Router } from "express";
+import authRoutes from "./authRoutes.js";
+import taskRoutes from "./taskRoutes.js";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.json({ msg: "teste" });
-});
+router.use("/auth", authRoutes);
+router.use("/tasks", taskRoutes);
 
 export default router;
