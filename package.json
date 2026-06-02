@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/taskinsight-squad-2/taskinsight-backend.git"
   },
+  "private": true,
   "license": "ISC",
   "author": "taskinsight-squad-2",
   "type": "module",
@@ -19,8 +20,13 @@
     "dev": "node src/server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.6.2"
+    "express-rate-limit": "^8.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.6.3",
+    "nodemon": "^3.0.1"
   }
 }
