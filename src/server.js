@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv/config";
 import connectDatabase from "./config/database.config.js";
 import router from "./routes/index.js";
 
@@ -25,15 +25,3 @@ connectDatabase()
     console.error("Failed to connect to database", err);
     process.exit(1);
   });
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const { default: app } = await import("./app.js");
-const { default: connectDB } = await import("./config/database.js");
-
-connectDB();
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Servidor iniciado");
-});
