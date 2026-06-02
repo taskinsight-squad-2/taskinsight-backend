@@ -1,13 +1,12 @@
-import express from "express";
-import dotenv from "dotenv/config";
-import router from "./routes/index.js";
-import "./config/database.js";
+import dotenv from "dotenv";
 
-const PORT = process.env.PORT || 3000;
-const app = express();
+dotenv.config();
 
-app.use(router);
+const { default: app } = await import("./app.js");
+const { default: connectDB } = await import("./config/database.js");
 
-app.listen(3000, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+connectDB();
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Servidor iniciado");
 });
