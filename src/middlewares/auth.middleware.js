@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
-  const userId = req.header("x-user-id");
+  const token = req.headers.authorization?.split(" ")[1];
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    return res
-      .status(401)
-      .json({ error: "Missing or invalid x-user-id header" });
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
-
-  req.user = { id: userId };
-  next();
 };

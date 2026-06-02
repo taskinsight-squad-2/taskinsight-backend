@@ -1,14 +1,12 @@
-// exemplo: src/routes/task.routes.js
 import { Router } from "express";
 import * as taskController from "../controllers/task.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.use(authMiddleware);
-router.post("/", taskController.create);
-router.get("/", taskController.list);
-router.put("/:id", taskController.update);
-router.delete("/:id", taskController.remove);
+router.post("/", authMiddleware, taskController.create);
+router.get("/", authMiddleware, taskController.list);
+router.put("/:id", authMiddleware, taskController.update);
+router.delete("/:id", authMiddleware, taskController.remove);
 
 export default router;

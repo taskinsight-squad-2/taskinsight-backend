@@ -46,8 +46,9 @@ class UserService {
     );
 
     return {
-      token,
+      
       user,
+      token,
     };
   }
 }
