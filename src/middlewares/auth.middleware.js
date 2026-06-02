@@ -1,28 +1,14 @@
 import jwt from "jsonwebtoken";
 
-export default (req, res, next) => {
-  const authHeader = req.headers.authorization;
+export const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
 
-  if (!authHeader) {
-    return res
-      .status(401)
-      .json({ message: "Token ausente" });
-  }
-
-  const [, token] = authHeader.split(" ");
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
-
-    req.userId = decoded.id;
-
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch {
-    return res
-      .status(401)
-      .json({ message: "Token inválido" });
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 };

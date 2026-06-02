@@ -1,9 +1,9 @@
-import authService from "../services/auth.service.js";
+import userService from "../services/user.service.js";
 
-class AuthController {
+class UserController {
   async register(req, res) {
     try {
-      const user = await authService.register(req.body);
+      const user = await userService.register(req.body);
 
       return res.status(201).json(user);
     } catch (error) {
@@ -17,7 +17,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
 
-      const result = await authService.login(
+      const result = await userService.login(
         email,
         password
       );
@@ -31,4 +31,4 @@ class AuthController {
   }
 }
 
-export default new AuthController();
+export default new UserController();

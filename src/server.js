@@ -1,13 +1,27 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv/config";
+import cors from "cors";
+import connectDatabase from "./config/database.config.js";
 import router from "./routes/index.js";
-import "./config/database.js";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(router);
+app.use(cors());
+app.use(express.json());
+app.use("/api", router);
 
-app.listen(3000, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "Task Insight API" });
 });
+
+connectDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to database", err);
+    process.exit(1);
+  });
