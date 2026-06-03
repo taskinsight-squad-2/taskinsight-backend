@@ -6,11 +6,19 @@ class UserRepository {
   }
 
   async findByEmail(email) {
-    return User.findOne({ email });
+    return User.findOne({ email, deletedAt: null });
   }
 
   async findById(id) {
-    return User.findById(id);
+    return User.findOne({ _id: id, deletedAt: null });
+  }
+
+  async softDelete(id) {
+    return User.findByIdAndUpdate(
+      id,
+      { deletedAt: new Date() },
+      { new: true }
+    );
   }
 }
 
