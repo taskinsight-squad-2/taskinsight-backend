@@ -4,7 +4,7 @@ import userRepository from "../repositories/user.repository.js";
 import jwtConfig from "../config/jwt.js";
 
 class UserService {
-  async register({ name, email, password }) {
+  async register({ name, email, password, role }) {
     const userExists = await userRepository.findByEmail(email);
 
     if (userExists) {
@@ -18,6 +18,7 @@ class UserService {
       name,
       email,
       password: hashedPassword,
+      role: role ?? "user",
     });
 
     return user;
@@ -30,25 +31,29 @@ class UserService {
       throw new Error("Credenciais inválidas");
     }
 
-    const validPassword = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       throw new Error("Credenciais inválidas");
     }
 
     const token = jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role },
       jwtConfig.secret,
       { expiresIn: jwtConfig.expiresIn }
     );
 
-    return {
-      token,
-      user,
-    };
+    return { token, user };
+  }
+
+  async delete(id) {
+    const user = await userRepository.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    await userRepository.softDelete(id);
   }
 }
 
