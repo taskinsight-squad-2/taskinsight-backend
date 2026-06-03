@@ -17,14 +17,23 @@ class UserController {
     try {
       const { email, password } = req.body;
 
-      const result = await userService.login(
-        email,
-        password
-      );
+      const result = await userService.login(email, password);
 
       return res.json(result);
     } catch (error) {
       return res.status(401).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      await userService.delete(req.params.id);
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(404).json({
         message: error.message,
       });
     }
