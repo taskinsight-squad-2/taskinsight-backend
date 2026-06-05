@@ -24,7 +24,15 @@ export const list = async (req: Request & { user?: any }, res: Response) => {
 
 export const update = async (req: Request & { user?: any }, res: Response) => {
   try {
-    const updated = await taskService.updateTask(req.params.id, req.body);
+    if (req.body.dueDate && !String(req.body.deadlineChangeReason || '').trim()) {
+      return res.status(400).json({ error: 'Motivo de alteração de prazo é obrigatório' });
+    }
+
+    if (req.body.deadlineChangeReason && !req.body.dueDate) {
+      return res.status(400).json({ error: 'deadlineChangeReason só pode ser usado quando dueDate muda' });
+    }
+
+    const updated = await taskService.updateTask(req.params.id, req.body, req.user.id);
     return res.status(200).json(updated);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
@@ -33,7 +41,7 @@ export const update = async (req: Request & { user?: any }, res: Response) => {
 
 export const remove = async (req: Request & { user?: any }, res: Response) => {
   try {
-    await taskService.deleteTask(req.params.id);
+    await taskService.deleteTask(req.params.id, req.user.id);
     return res.status(200).json({ message: 'Task removida com sucesso' });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

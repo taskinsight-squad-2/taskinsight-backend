@@ -15,22 +15,30 @@ export class TaskRepository {
     return await Task.find(query).sort({ createdAt: -1 });
   }
 
-  async getTaskById(id: string) {
-    return await Task.findOne({ _id: new Types.ObjectId(id), isDeleted: false });
+  async getTaskById(id: string, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
+    return await Task.findOne(query);
   }
 
-  async updateTask(id: string, updateData: any) {
-    return await Task.findOneAndUpdate(
-      { _id: new Types.ObjectId(id), isDeleted: false },
-      updateData,
-      { new: true },
-    );
+  async updateTask(id: string, updateData: any, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
+    return await Task.findOneAndUpdate(query, updateData, { new: true });
   }
 
   // softdelete
-  async deleteTask(id: string) {
+  async deleteTask(id: string, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
     return await Task.findOneAndUpdate(
-      { _id: new Types.ObjectId(id), isDeleted: false },
+      query,
       { isDeleted: true, deletedAt: new Date() },
       { new: true },
     );
