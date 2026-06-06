@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Ignore compiled JS outputs produced from TypeScript in source folder
+src/**/*.js
+src/**/*.js.map
+
+# Ignore build output
+dist/
