@@ -6,10 +6,14 @@ class UserController {
     try {
       const user = await userService.register(req.body);
 
-      return res.status(201).json(user);
+      return res.status(201).json({
+        success: true,
+        data: user,
+      });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Erro ao registrar";
       return res.status(400).json({
+        success: false,
         message,
       });
     }
@@ -21,10 +25,14 @@ class UserController {
 
       const result = await userService.login(email, password);
 
-      return res.json(result);
+      return res.json({
+        success: true,
+        data: result,
+      });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Erro ao fazer login";
       return res.status(401).json({
+        success: false,
         message,
       });
     }
