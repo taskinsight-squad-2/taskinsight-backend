@@ -35,7 +35,7 @@ class UserService {
     const userExists = await userRepository.findByEmail(email);
 
     if (userExists) {
-      throw new Error("Usuário já existe");
+      throw new Error("Email já cadastrado");
     }
 
     const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
