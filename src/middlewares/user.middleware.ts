@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 import jwtConfig from '../config/jwt.js';
 
 interface JwtPayload {
@@ -18,7 +19,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   try {
     const decoded = jwt.verify(token, jwtConfig.secret) as JwtPayload;
 
-    if (!decoded.id) {
+    if (!decoded.id || !Types.ObjectId.isValid(decoded.id)) {
       return res.status(401).json({ message: 'Token invalido' });
     }
 

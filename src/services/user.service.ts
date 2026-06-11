@@ -26,7 +26,8 @@ class UserService {
       throw new Error('Nome, email e senha sao obrigatorios');
     }
 
-    const userExists = await userRepository.findByEmail(email);
+    const normalizedEmail = email.trim().toLowerCase();
+    const userExists = await userRepository.findByEmail(normalizedEmail);
 
     if (userExists) {
       throw new Error('Usuario ja existe');
@@ -37,7 +38,7 @@ class UserService {
 
     const user = await userRepository.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
@@ -49,7 +50,7 @@ class UserService {
       throw new Error('Email e senha sao obrigatorios');
     }
 
-    const user = await userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email.trim().toLowerCase());
 
     if (!user) {
       throw new Error('Credenciais invalidas');

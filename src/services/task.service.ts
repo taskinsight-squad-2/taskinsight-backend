@@ -15,7 +15,15 @@ function ensureValidTaskId(id: string) {
   }
 }
 
+function ensureValidUserId(userId?: string) {
+  if (!userId || !Types.ObjectId.isValid(userId)) {
+    throw new Error('ID do usuario invalido');
+  }
+}
+
 export const createTask = async (data: any) => {
+  ensureValidUserId(data.userId);
+
   if (!data.title) {
     throw new Error('Title is required');
   }
@@ -28,11 +36,13 @@ export const createTask = async (data: any) => {
 };
 
 export const listTasks = async (userId: string) => {
+  ensureValidUserId(userId);
   return taskRepository.findAllTasks(userId);
 };
 
 export const updateTask = async (id: string, data: any, userId?: string) => {
   ensureValidTaskId(id);
+  ensureValidUserId(userId);
 
   if (data.status && !validStatuses.includes(data.status)) {
     throw new Error('Invalid status value');
@@ -49,6 +59,7 @@ export const updateTask = async (id: string, data: any, userId?: string) => {
 
 export const deleteTask = async (id: string, userId?: string) => {
   ensureValidTaskId(id);
+  ensureValidUserId(userId);
 
   const task = await taskRepository.deleteTask(id, userId);
 
