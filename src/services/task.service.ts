@@ -1,13 +1,33 @@
+import { Types } from 'mongoose';
 import { TaskRepository } from '../repositories/task.repository.js';
 
 const repo = new TaskRepository();
 
+function normalizeTitle(title: string) {
+  return title.trim().toLowerCase().replace(/\s+/g, '-');
+}
+
+function ensureValidTaskId(id: string) {
+  if (!Types.ObjectId.isValid(id)) {
+    throw new Error('ID da tarefa invalido');
+  }
+}
+
 export async function createTask(taskData: any) {
-  const titleNormalized = taskData.title.toLowerCase().replace(/\s+/g, '-');
+  if (!taskData.title || typeof taskData.title !== 'string') {
+    throw new Error('Titulo e obrigatorio');
+  }
+
+  if (!taskData.description || typeof taskData.description !== 'string') {
+    throw new Error('Descricao e obrigatoria');
+  }
+
+  const titleNormalized = normalizeTitle(taskData.title);
   const existing = await repo.normalizeTitle(titleNormalized);
   if (existing) {
-    throw new Error('Título já existe');
+    throw new Error('Titulo ja existe');
   }
+
   taskData.titleNormalized = titleNormalized;
   return await repo.createTask(taskData);
 }
@@ -17,14 +37,17 @@ export async function listTasks(userId: string, filters: any = {}) {
 }
 
 export async function getTaskById(id: string, userId?: string) {
+  ensureValidTaskId(id);
   return await repo.getTaskById(id, userId);
 }
 
 export async function updateTask(id: string, updateData: any, userId?: string) {
+  ensureValidTaskId(id);
+
   const task = await repo.getTaskById(id, userId);
 
   if (!task) {
-    throw new Error('Tarefa não encontrada');
+    throw new Error('Tarefa nao encontrada');
   }
 
   if (task.isDeleted) {
@@ -32,14 +55,11 @@ export async function updateTask(id: string, updateData: any, userId?: string) {
   }
 
   if (updateData.title) {
-    const titleNormalized = updateData.title
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-
+    const titleNormalized = normalizeTitle(updateData.title);
     const existing = await repo.normalizeTitle(titleNormalized);
 
     if (existing && existing._id.toString() !== id) {
-      throw new Error('Título já existe');
+      throw new Error('Titulo ja existe');
     }
 
     updateData.titleNormalized = titleNormalized;
@@ -48,7 +68,7 @@ export async function updateTask(id: string, updateData: any, userId?: string) {
   if (updateData.dueDate) {
     const newDueDate = new Date(updateData.dueDate);
     if (Number.isNaN(newDueDate.getTime())) {
-      throw new Error('dueDate inválido');
+      throw new Error('dueDate invalido');
     }
 
     const currentDueDate = task.dueDate ? new Date(task.dueDate) : null;
@@ -58,7 +78,7 @@ export async function updateTask(id: string, updateData: any, userId?: string) {
     if (dueDateChanged) {
       const reason = String(updateData.deadlineChangeReason || '').trim();
       if (!reason) {
-        throw new Error('Motivo de alteração de prazo é obrigatório');
+        throw new Error('Motivo de alteracao de prazo e obrigatorio');
       }
 
       updateData.deadlineHistory = [
@@ -89,7 +109,7 @@ export async function updateTask(id: string, updateData: any, userId?: string) {
 
     if (!allowed.includes(updateData.status)) {
       throw new Error(
-        `Transição inválida: ${task.status} -> ${updateData.status}`
+        `Transicao invalida: ${task.status} -> ${updateData.status}`
       );
     }
 
@@ -106,14 +126,16 @@ export async function updateTask(id: string, updateData: any, userId?: string) {
 }
 
 export async function deleteTask(id: string, userId?: string) {
+  ensureValidTaskId(id);
+
   const task = await repo.getTaskById(id, userId);
 
   if (!task) {
-    throw new Error('Tarefa não encontrada');
+    throw new Error('Tarefa nao encontrada');
   }
 
   if (task.isDeleted) {
-    throw new Error('Tarefa já deletada');
+    throw new Error('Tarefa ja deletada');
   }
 
   return await repo.deleteTask(id, userId);

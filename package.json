@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "taskinsight-squad-2",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
