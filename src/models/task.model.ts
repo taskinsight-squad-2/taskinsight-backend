@@ -1,0 +1,86 @@
+import mongoose, { Document, Types } from 'mongoose';
+
+export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
+export interface ITask extends Document {
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  userId: Types.ObjectId;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  dueDate: Date | null;
+  isDeleted: boolean;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const taskSchema = new mongoose.Schema<ITask>(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 120,
+    },
+
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 1000,
+    },
+
+    status: {
+      type: String,
+      enum: ['PENDING', 'IN_PROGRESS', 'DONE', 'CANCELLED'],
+      default: 'PENDING',
+    },
+
+    priority: {
+      type: String,
+      enum: ['LOW', 'MEDIUM', 'HIGH'],
+      default: 'MEDIUM',
+    },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+
+    startedAt: {
+      type: Date,
+      default: null,
+    },
+
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+
+    dueDate: {
+      type: Date,
+      default: null,
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model<ITask>('Task', taskSchema);
