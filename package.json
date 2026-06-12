@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/taskinsight-squad-2/taskinsight-backend.git"
   },
+  "private": true,
   "license": "ISC",
   "author": "taskinsight-squad-2",
   "type": "module",
