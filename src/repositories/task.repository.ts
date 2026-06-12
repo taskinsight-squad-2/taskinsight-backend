@@ -1,40 +1,51 @@
-import Task, { ITask } from '../models/task.model.js';
+import Task from '../models/task.model.js';
+import { Types } from 'mongoose';
 
-export const createTask = (data: Partial<ITask>) => Task.create(data);
-
-export const findAllTasks = (userId: string) =>
-  Task.find({ userId, isDeleted: false }).sort({ createdAt: -1 });
-
-export const findTaskById = (id: string, userId?: string) => {
-  const query: Record<string, unknown> = { _id: id, isDeleted: false };
-
-  if (userId) {
-    query.userId = userId;
+export class TaskRepository {
+  async createTask(taskData: any) {
+    if (taskData.title && !taskData.titleNormalized) {
+      taskData.titleNormalized = taskData.title.toLowerCase().replace(/\s+/g, '-');
+    }
+    const task = new Task(taskData);
+    return await task.save();
   }
 
-  return Task.findOne(query);
-};
-
-export const updateTask = (id: string, data: Partial<ITask>, userId?: string) => {
-  const query: Record<string, unknown> = { _id: id, isDeleted: false };
-
-  if (userId) {
-    query.userId = userId;
+  async getTasksByUserId(userId: string, filters: any = {}) {
+    const query = { userId: new Types.ObjectId(userId), isDeleted: false, ...filters } as any;
+    return await Task.find(query).sort({ createdAt: -1 });
   }
 
-  return Task.findOneAndUpdate(query, data, { new: true });
-};
-
-export const deleteTask = (id: string, userId?: string) => {
-  const query: Record<string, unknown> = { _id: id, isDeleted: false };
-
-  if (userId) {
-    query.userId = userId;
+  async getTaskById(id: string, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
+    return await Task.findOne(query);
   }
 
-  return Task.findOneAndUpdate(
-    query,
-    { isDeleted: true, deletedAt: new Date() },
-    { new: true }
-  );
-};
+  async updateTask(id: string, updateData: any, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
+    return await Task.findOneAndUpdate(query, updateData, { new: true });
+  }
+
+  // softdelete
+  async deleteTask(id: string, userId?: string) {
+    const query: any = { _id: new Types.ObjectId(id), isDeleted: false };
+    if (userId) {
+      query.userId = new Types.ObjectId(userId);
+    }
+    return await Task.findOneAndUpdate(
+      query,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true },
+    );
+  }
+
+  // titulo normalizado
+  async normalizeTitle(titleNormalized: string) {
+    return await Task.findOne({ titleNormalized, isDeleted: false });
+  }
+}

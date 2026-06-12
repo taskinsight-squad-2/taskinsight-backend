@@ -3,8 +3,16 @@ import mongoose, { Document, Types } from 'mongoose';
 export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 
+export interface DeadlineHistoryEntry {
+  oldDate: Date | null;
+  newDate: Date;
+  reason: string;
+  changedAt: Date;
+}
+
 export interface ITask extends Document {
   title: string;
+  titleNormalized: string;
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
@@ -12,10 +20,9 @@ export interface ITask extends Document {
   startedAt: Date | null;
   completedAt: Date | null;
   dueDate: Date | null;
+  deadlineHistory: DeadlineHistoryEntry[];
   isDeleted: boolean;
   deletedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const taskSchema = new mongoose.Schema<ITask>(
@@ -26,6 +33,12 @@ const taskSchema = new mongoose.Schema<ITask>(
       trim: true,
       minlength: 3,
       maxlength: 120,
+    },
+    titleNormalized: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
     },
 
     description: {
@@ -68,6 +81,17 @@ const taskSchema = new mongoose.Schema<ITask>(
       type: Date,
       default: null,
     },
+    deadlineHistory: {
+      type: [
+        {
+          oldDate: { type: Date, default: null },
+          newDate: { type: Date, required: true },
+          reason: { type: String, required: true, trim: true, maxlength: 500 },
+          changedAt: { type: Date, required: true, default: Date.now },
+        },
+      ],
+      default: [],
+    },
 
     isDeleted: {
       type: Boolean,
@@ -80,7 +104,10 @@ const taskSchema = new mongoose.Schema<ITask>(
       default: null,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-export default mongoose.model<ITask>('Task', taskSchema);
+export const Task = mongoose.model<ITask>('Task', taskSchema);
+export default Task;

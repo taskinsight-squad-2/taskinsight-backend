@@ -4,9 +4,10 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.post('/', authMiddleware, taskController.create);
-router.get('/', authMiddleware, taskController.list);
-router.put('/:id', authMiddleware, taskController.update);
-router.delete('/:id', authMiddleware, taskController.remove);
+router.use(authMiddleware);
+router.post('/', taskController.create);
+router.get('/', taskController.list);
+router.put('/:id', taskController.update);
+router.delete('/:id', taskController.remove);
 
 export default router;
