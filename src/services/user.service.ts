@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import jwtConfig from '../config/jwt.js';
-import { IUser } from '../models/user.model.js';
+import { IUser } from '../models/User.model.js';
 import userRepository from '../repositories/user.repository.js';
 
 interface RegisterInput {
